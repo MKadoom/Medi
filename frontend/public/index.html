@@ -24,3 +24,430 @@
     <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAI - التشخيص الطبي الذكي</title>
+    <style>
+        /* General Styles */
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --success: #34a853;
+            --warning: #fbbc05;
+            --danger: #ea4335;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-700: #495057;
+            --gray-900: #212529;
+            --border-radius: 8px;
+            --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            background-color: white;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .logo img {
+            height: 32px;
+            margin-left: 8px;
+        }
+
+        .profile-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .tab-navigation {
+            display: flex;
+            padding: 12px 16px;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            margin-left: 8px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .main-content {
+            padding: 20px 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .button {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .button:hover {
+            background: #1567d3;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-icon {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .diagnosis-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .confidence-indicator {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 16px;
+            color: white;
+        }
+
+        .high-confidence {
+            background: var(--success);
+        }
+
+        .medium-confidence {
+            background: var(--warning);
+        }
+
+        .low-confidence {
+            background: var(--danger);
+        }
+
+        .diagnosis-details {
+            flex: 1;
+        }
+
+        .diagnosis-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .diagnosis-description {
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .bottom-navigation {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 1024px;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="/src/logomediai.jpeg" alt="MediAI Logo">
+                MediAI
+            </div>
+            <div class="profile-icon">👨‍⚕️</div>
+        </header>
+
+        <div class="tab-navigation">
+            <div class="tab active">تشخيص جديد</div>
+            <div class="tab">التشخيصات السابقة</div>
+            <div class="tab">الاستشارات</div>
+        </div>
+
+        <div class="main-content">
+            <h2 class="section-title">تشخيص جديد</h2>
+
+            <div class="card">
+                <div class="input-group">
+                    <label class="input-label">معلومات المريض</label>
+                    <input type="text" class="text-input" placeholder="رقم الملف الطبي / المُعرف">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">العمر</label>
+                    <input type="number" class="text-input" placeholder="أدخل العمر">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">الجنس</label>
+                    <select class="text-input">
+                        <option value="">اختر الجنس</option>
+                        <option value="male">ذكر</option>
+                        <option value="female">أنثى</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="category-title">المظاهر السريرية</h3>
+
+                <div class="feature-category">
+                    <h4 class="category-title">الأعراض العامة</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fever" class="checkbox-input">
+                            <label for="fever">حمى</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fatigue" class="checkbox-input">
+                            <label for="fatigue">إرهاق</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="headache" class="checkbox-input">
+                            <label for="headache">صداع</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="nausea" class="checkbox-input">
+                            <label for="nausea">غثيان</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-category">
+                    <h4 class="category-title">المظاهر الجلدية</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rash" class="checkbox-input">
+                            <label for="rash">طفح جلدي</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="itching" class="checkbox-input">
+                            <label for="itching">حكة</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="lesions" class="checkbox-input">
+                            <label for="lesions">آفات جلدية</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pigmentation" class="checkbox-input">
+                            <label for="pigmentation">تغير اللون</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="width: 100%; margin: 20px;">
+                    <label class="input-label">شدة الأعراض</label>
+                    <input type="range" min="1" max="10" value="5" class="severity-slider" style="width: 300px;">
+                    <div class="slider-labels" style="width: 100%; display: flex; flex:space-between;">
+                        <span style="padding: 0 20px;">خفيفة</span>
+                        <span style="padding: 0 20px;">متوسطة</span>
+                        <span style="padding: 0 20px;">شديدة</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">ملاحظات إضافية</label>
+                    <textarea class="text-input" rows="3" placeholder="أضف أي ملاحظات سريرية إضافية هنا..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="category-title">تحميل الصور الطبية</h3>
+                <div class="upload-area">
+                    <div class="upload-icon">📷</div>
+                    <p>اضغط لتحميل صورة أو التقاط صورة جديدة</p>
+                </div>
+            </div>
+
+            <button class="button" style="width: 100%; margin-bottom: 24px;">تحليل البيانات</button>
+
+            <!-- Results Section -->
+            <div class="card results-card">
+                <h3 class="category-title">نتائج التحليل</h3>
+
+                <div class="diagnosis-item">
+                    <div class="confidence-indicator high-confidence">87%</div>
+                    <div class="diagnosis-details">
+                        <div class="diagnosis-name">التهاب الجلد التأتبي (الأكزيما)</div>
+                        <div class="diagnosis-description">التطابق عالي مع الأعراض المقدمة والصور</div>
+                    </div>
+                </div>
+
+                <div class="diagnosis-item">
+                    <div class="confidence-indicator medium-confidence">64%</div>
+                    <div class="diagnosis-details">
+                        <div class="diagnosis-name">الصدفية</div>
+                        <div class="diagnosis-description">تطابق متوسط، مع بعض الاختلافات في نمط الطفح</div>
+                    </div>
+                </div>
+
+                <div class="diagnosis-item">
+                    <div class="confidence-indicator low-confidence">37%</div>
+                    <div class="diagnosis-details">
+                        <div class="diagnosis-name">التهاب الجلد التماسي</div>
+                        <div class="diagnosis-description">تطابق منخفض، بعض الأعراض متشابهة</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <button class="button" style="width: 100%; margin-bottom: 8px;">حجز استشارة مع أخصائي</button>
+                    <button class="button button-outline" style="width: 100%; margin-bottom: 50px;">حفظ التقرير</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-navigation">
+            <a href="main.html" class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <span>الرئيسية</span>
+            </a>
+            <a href="/past-diagnosis.html" class="nav-item">
+                <div class="nav-icon">🔍</div>
+                <span>التشخيص</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">📋</div>
+                <span>التقارير</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">👨‍⚕️</div>
+                <span>الملف</span>
+            </a>
+        </div>
+    </div>
+        </div>
+        <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
