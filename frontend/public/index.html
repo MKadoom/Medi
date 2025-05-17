@@ -349,18 +349,22 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h3 class="category-title">تحميل الصور الطبية</h3>
-                <div class="upload-area">
-                    <div class="upload-icon">📷</div>
-                    <p>اضغط لتحميل صورة أو التقاط صورة جديدة</p>
-                </div>
-            </div>
+<div class="card">
+  <h3 class="category-title">تحميل الصور الطبية</h3>
+  <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">📸</div>
+    <p>اضغط لتحميل صورة أو التقاط صورة جديدة</p>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+  </div>
+</div>
+
+<button class="button" style="width: 100%; margin-bottom: 24px;" onclick="analyzeImage()">تحليل البيانات</button>
+
 
             <button class="button" style="width: 100%; margin-bottom: 24px;">تحليل البيانات</button>
 
-            <!-- Results Section -->
-            <div class="card results-card">
+            <!-- Results Section 
+           <div class="card results-card">
                 <h3 class="category-title">نتائج التحليل</h3>
 
                 <div class="diagnosis-item">
@@ -369,7 +373,15 @@
                         <div class="diagnosis-name">التهاب الجلد التأتبي (الأكزيما)</div>
                         <div class="diagnosis-description">التطابق عالي مع الأعراض المقدمة والصور</div>
                     </div>
-                </div>
+                </div>-->
+            <!-- Results Section -->
+<div class="card results-card" id="resultCard" style="display: none;">
+  <h3 class="category-title">نتائج التحليل</h3>
+  <div id="diagnosisResult" class="diagnosis-item">
+    <!-- Filled dynamically -->
+  </div>
+</div>
+
 
                 <div class="diagnosis-item">
                     <div class="confidence-indicator medium-confidence">64%</div>
@@ -416,5 +428,44 @@
         </div>
         <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script type="module">
+  import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+
+  async function analyzeImage() {
+    const fileInput = document.getElementById("fileInput");
+    const resultCard = document.getElementById("resultCard");
+    const diagnosisResult = document.getElementById("diagnosisResult");
+
+    if (!fileInput.files.length) {
+      alert("الرجاء تحميل صورة أولاً.");
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    // Show loading
+    diagnosisResult.innerHTML = "جاري التحليل...";
+    resultCard.style.display = "block";
+
+    try {
+      const client = await Client("Azshv/skin-disease-detector");
+      const result = await client.predict("/predict", [handle_file(file)]);
+
+      const diagnosis = result.data[0];
+
+      diagnosisResult.innerHTML = `
+        <div class="confidence-indicator high-confidence">✅</div>
+        <div class="diagnosis-details">
+          <div class="diagnosis-name">${diagnosis}</div>
+          <div class="diagnosis-description">تم التحليل باستخدام نموذج الذكاء الاصطناعي</div>
+        </div>
+      `;
+    } catch (error) {
+      diagnosisResult.innerHTML = "حدث خطأ أثناء التحليل. يرجى المحاولة لاحقاً.";
+      console.error(error);
+    }
+  }
+</script>
+
 </body>
 </html>
