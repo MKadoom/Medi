@@ -428,8 +428,8 @@
         </div>
         <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script type="module">
-  import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+<script type="module">
+  import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
 
   async function analyzeImage() {
     const fileInput = document.getElementById("fileInput");
@@ -442,30 +442,33 @@
     }
 
     const file = fileInput.files[0];
-
-    // Show loading
     diagnosisResult.innerHTML = "جاري التحليل...";
     resultCard.style.display = "block";
 
     try {
-      const client = await Client("Azshv/skin-disease-detector");
-      const result = await client.predict("/predict", [handle_file(file)]);
-
-      const diagnosis = result.data[0];
+      const client = await Client.connect("Azshv/skin-disease-detector");
+      
+      const result = await client.predict("/predict", {
+        image: file
+      });
 
       diagnosisResult.innerHTML = `
         <div class="confidence-indicator high-confidence">✅</div>
         <div class="diagnosis-details">
-          <div class="diagnosis-name">${diagnosis}</div>
+          <div class="diagnosis-name">${result.data}</div>
           <div class="diagnosis-description">تم التحليل باستخدام نموذج الذكاء الاصطناعي</div>
         </div>
       `;
+      
     } catch (error) {
       diagnosisResult.innerHTML = "حدث خطأ أثناء التحليل. يرجى المحاولة لاحقاً.";
       console.error(error);
     }
   }
+
+  window.analyzeImage = analyzeImage;
 </script>
+
 
 </body>
 </html>
